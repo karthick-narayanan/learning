@@ -15,7 +15,7 @@ int main()
     v.push_back(t);
   }
   for (std::vector<int>::iterator it = v.begin() ; it != v.end(); ++it) {
-    sum = std::max(sum,sum + *it);
+    sum = std::max(*it,sum + *it);
     max_sum = std::max (max_sum, sum);
   }
   std::cout<< max_sum;
