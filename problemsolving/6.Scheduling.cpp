@@ -1,3 +1,17 @@
+/*
+A classic
+problem is as follows: Given n events with their starting and ending times, find a
+schedule that includes as many events as possible. It is not possible to select an
+event partially. For example, consider the following events:
+event starting time ending time
+A 1 3
+B 2 5
+C 3 9
+D 6 8
+In this case the maximum number of events is two. For example, we can select
+events B and D as follows:
+
+*/
 #include <bits/stdc++.h>
 
 bool compare(const std::pair<int,int> &a, const std::pair <int,int> &b) {
