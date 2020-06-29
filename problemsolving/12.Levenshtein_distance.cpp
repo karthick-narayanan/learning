@@ -31,8 +31,8 @@ int find_distance(std::string &str1, std::string &str2,int str1_st, int str2_st)
 }
 
 int main() {
-  std::string str1 = "LOVE";
-  std::string str2 = "MOVEEEEEE";
+  std::string str1 = "LLLLLMOVE";
+  std::string str2 = "MOVE";
 
   std::cout<<find_distance(str1, str2, 0, 0)<<"\n";
 
