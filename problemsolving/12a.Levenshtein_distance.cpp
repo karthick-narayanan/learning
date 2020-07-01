@@ -36,8 +36,15 @@ int find_distance(std::vector<std::vector<int>> &matrix, std::string &str1, std:
 
 int main() {
   std::string str1 = "LOVE";
-  std::string str2 = "MOVVE";
+  std::string str2 = "MOVIE";
   std::vector<std::vector<int>> matrix(str1.length(), std::vector<int>(str2.length(), INT_MAX));
   std::cout<<find_distance(matrix, str1, str2, 0, 0)<<"\n";
+
+  for(int i=0; i<matrix.size(); i++){
+    for(int j=0;j<matrix[0].size(); j++) {
+      std::cout << matrix[i][j] << " ";
+    }
+    std::cout << '\n';
+  }
 
 }
