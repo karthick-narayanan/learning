@@ -25,6 +25,18 @@
 
 #include <bits/stdc++.h>
 
+typedef struct fsm {
+  int **transition_buf;
+  int curr_state;
+  int no_of_events;
+  int no_of_states;
+  std::vector<std::string> final_states;
+  std::map<std::string, int> s_to_i;
+  std::map<int, std::string> i_to_s;
+  std::map<std::string, int> e_to_i;
+  std::map<int, std::string> i_to_e;
+}fsm_t;
+
 void print_transition(int** &t, int states, int events, char* &events_arr)
 {
 
@@ -58,9 +70,42 @@ int read_input(std::string i_string, int &no,
   return true;
 }
 
-int build_state_machine(char* file, int** &transition_buf, int &curr_state,
-                     int &no_of_events, int &no_of_states,
-                     std::map<std::string, int> &s_to_i, std::map<std::string, int> &e_to_i){
+void parse_states(std::map<std::string, int> &t_to_i,
+                  std::vector<std::string> &final_states,
+                  int &curr_state) {
+  std::map<std::string, int>::iterator it;
+  std::string temp_s;
+
+  for (it = t_to_i.begin(); it != t_to_i.end(); it++) {
+    std::cout<<"Printing states : " << (it->first  ) << " " << it->second<<"\n";
+     temp_s = it->first;
+     if(temp_s.back() == '+') {
+       if(curr_state == -1) {
+         curr_state = it->second;
+       }
+       /* More than 1 start states */
+       else {
+         curr_state = -1;
+         return;
+       }
+       //delete last character
+       temp_s.pop_back();
+       std::swap(t_to_i[temp_s], it->second);
+       it = t_to_i.erase(it);
+     }
+     else if(temp_s.back() == '^') {
+       //delete last character
+       temp_s.pop_back();
+       final_states.push_back(temp_s);
+       std::swap(t_to_i[temp_s], it->second);
+       it = t_to_i.erase(it);
+
+     }
+  }
+ return;
+}
+
+int build_state_machine(char* file, fsm_t &dfa){
 
   std::ifstream fl(file);
   std::string st;
@@ -74,11 +119,20 @@ int build_state_machine(char* file, int** &transition_buf, int &curr_state,
 
  //1st line states
  if(std::getline(fl, st)) {
-    if(!read_input(st, no_of_states, s_to_i)) {
+    if(!read_input(st, dfa.no_of_states, dfa.s_to_i)) {
       std::cout<<"ERR : parsing states from"<<file<<"\n";
       return false;
     }
-    std::cout<<"No.of states : " << no_of_states<<"\n";
+    std::cout<<"No.of states : " << dfa.no_of_states<<"\n";
+    parse_states(dfa.s_to_i, dfa.final_states, dfa.curr_state);
+    if(dfa.curr_state == -1) {
+      std::cout<<"ERR : Invalid Start states :"<<file<<"\n";
+      return false;
+    }
+    if(dfa.final_states.size() == 0){
+      std::cout<<"ERR : Invalid Final states : "<<file<<"\n";
+      return false;
+    }
  }
  else {
    std::cout<<"ERR : reading states from"<<file<<"\n";
@@ -86,11 +140,11 @@ int build_state_machine(char* file, int** &transition_buf, int &curr_state,
  }
  //2nd line events
  if(std::getline(fl, st)) {
-   if(!read_input(st, no_of_events, e_to_i)) {
+   if(!read_input(st, dfa.no_of_events, dfa.e_to_i)) {
      std::cout<<"ERR : parsing events from"<<file<<"\n";
      return false;
    }
-   std::cout<<"No.of events : " << no_of_events<<"\n";
+   std::cout<<"No.of events : " << dfa.no_of_events<<"\n";
  }
  else {
    std::cout<<"ERR : reading events from"<<file<<"\n";
@@ -109,19 +163,15 @@ return true;
 
 int main(int argc, char *argv[]){
 
-  int **transition_buf;
-  int curr_state;
-  int no_of_events;
-  int no_of_states;
-  std::map<std::string, int> s_to_i;
-  std::map<std::string, int> e_to_i;
+  fsm_t dfa;
 
+  //memset(&dfa, 0, sizeof(fsm_t));
+  dfa.curr_state = -1;
   if(argc != 2){
     std::cout <<"Input ./dfa input_file.txt";
   }
 
- if(!build_state_machine(argv[1], transition_buf, curr_state,
-                      no_of_events, no_of_states, s_to_i, e_to_i)) {
+ if(!build_state_machine(argv[1], dfa)) {
      std::cout<<"Error in building statemachine";
      return 0;
  }
